@@ -13,7 +13,24 @@ struct MyGardenCellView: View {
     let myGardenVegetable: MyGardenVegetable
     
     var body: some View {
-        AsyncImageCircle(imageURL: myGardenVegetable.vegetable.thumbnailImage)
+        HStack(alignment: .center, spacing: 16){
+            AsyncImageCircle(imageURL: myGardenVegetable.vegetable.thumbnailImage)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(myGardenVegetable.vegetable.name)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                HStack {
+                    Image(systemName: myGardenVegetable.plantOption.icon)
+                        .foregroundColor(.green)
+                }
+            }
+            Spacer()
+            
+            HarvestCountDownView(plantingData: myGardenVegetable.datePlanted, harvestingDays: myGardenVegetable.daysToHarvest)
+            
+        }
+        .padding()
     }
 }
 
