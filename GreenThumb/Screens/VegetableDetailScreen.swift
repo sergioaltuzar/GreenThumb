@@ -6,10 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct VegetableDetailScreen: View {
     
     let vegetable: Vegetable
+    
+    @Environment(\.modelContext) private var context
+    
+    @State private var showSeedOrSeedlingMenu: Bool = false
+    
+    private func saveVegetableToMyGarden(with plantOption: PlantOption) {
+        let myGardenVegetable = MyGardenVegetable(vegetable: vegetable, plantOption: plantOption)
+        context.insert(myGardenVegetable)
+        
+        do {
+            try context.save()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
     
     var body: some View {
         ScrollView{
@@ -68,7 +84,28 @@ struct VegetableDetailScreen: View {
                 
                 
             }.padding()
-        }.navigationTitle(vegetable.name)
+        }
+        .toolbar(content: {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showSeedOrSeedlingMenu = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title2)
+                        .foregroundColor(.green)
+                }
+            }
+        })
+        .sheet(isPresented: $showSeedOrSeedlingMenu, content: {
+            SeedOrSeedlingView(OnSelected: { option in
+                saveVegetableToMyGarden(with: option)
+                
+            })
+            .presentationDetents([.fraction(0.25)])
+            .presentationBackground(Color(.systemGray6))
+        })
+        
+        .navigationTitle(vegetable.name)
     }
 }
 
@@ -111,4 +148,5 @@ struct SectionHeader: View {
     NavigationStack {
         VegetableDetailScreen(vegetable: PreviewData.loadVegetables()[0])
     }
+    .modelContainer(previewContainer)
 }
