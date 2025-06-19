@@ -14,6 +14,9 @@ class MyGardenVegetable: Identifiable {
     var plantOption: PlantOption
     var datePlanted: Date = Date()
     
+    @Relationship(deleteRule: .cascade)
+    var notes: [Note]?
+    
     init(vegetable: Vegetable, plantOption: PlantOption) {
         self.vegetable = vegetable
         self.plantOption = plantOption
