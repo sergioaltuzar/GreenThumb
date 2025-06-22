@@ -11,23 +11,34 @@ import SwiftData
 struct MyGardenScreen: View {
     
     @Query private var myGardenVegetables: [MyGardenVegetable]
+    @Environment(\.modelContext) private var context
+    
+    private func deleteMyGardenVegetable (at offsets: IndexSet) {
+        offsets.forEach { index in
+            let myGardenVegetable = myGardenVegetables[index]
+            context.delete(myGardenVegetable)
+            try? context.save()
+        }
+    }
     
     var body: some View {
-        List(myGardenVegetables) { myGardenVegetables in
-            NavigationLink {
-                NoteListScreen(myGardenVegetable: myGardenVegetables)
-            } label: {
-                MyGardenCellView(myGardenVegetable: myGardenVegetables)
+        List {
+            ForEach(myGardenVegetables) { myGardenVegetables in
+                NavigationLink {
+                    NoteListScreen(myGardenVegetable: myGardenVegetables)
+                } label: {
+                    MyGardenCellView(myGardenVegetable: myGardenVegetables)
+                }
             }
+            .onDelete(perform: deleteMyGardenVegetable)
         }
         .listStyle(.plain)
         .navigationTitle("My Garden")
     }
 }
 
-#Preview {
+#Preview(traits: .sampleData) {
     NavigationStack {
         MyGardenScreen()
     }
-    .modelContainer(previewContainer)
 }
