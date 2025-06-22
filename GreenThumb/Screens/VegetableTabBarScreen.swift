@@ -8,10 +8,22 @@
 import SwiftUI
 
 struct VegetableTabBarScreen: View {
+    
+    @State private var vegetables: [Vegetable] = []
+    private var pests: [PestModel] {
+        
+        let allPest = vegetables.flatMap { $0.pests ?? [] }
+        
+        return Array (Set(allPest.map { $0.name.lowercased() }))
+            .compactMap { name in
+                allPest.first { $0.name.lowercased() == name }
+            }
+    }
+    
     var body: some View {
         TabView {
             NavigationStack {
-                VegetableListScreen()
+                VegetableListScreen(vegetables: vegetables)
             }.tabItem {
                 Image(systemName: "leaf")
                 Text("Vegetables")
@@ -23,10 +35,17 @@ struct VegetableTabBarScreen: View {
                 Text("My Garden")
             }
             NavigationStack {
-                Text("Pests")
+                PestListScreen(pests: pests)
             }.tabItem {
                 Image(systemName: "ladybug")
                 Text("Pest")
+            }
+        }.task {
+            do {
+                let client = VegetableHTTPClient()
+                vegetables = try await client.fetchVegetables()
+            } catch {
+                print(error.localizedDescription)
             }
         }
     }

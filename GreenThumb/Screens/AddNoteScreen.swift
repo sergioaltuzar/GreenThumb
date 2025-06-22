@@ -23,6 +23,10 @@ struct AddNoteScreen: View {
     @State private var imageData: Data?
     @State private var isCameraSelected: Bool = false
     
+    private var isFormValid : Bool {
+        !noteTitle.isEmptyOrWhitespace && !noteBody.isEmptyOrWhitespace
+    }
+    
     private func saveNote() {
         let note = Note(title: noteTitle, body: noteBody)
         note.photo = imageData
@@ -54,7 +58,6 @@ struct AddNoteScreen: View {
                     }
                 }
 
-                
                 PhotosPicker(selection: $selectedPhotoItem, matching: .images, photoLibrary: .shared()) {
                     ZStack {
                         Circle()
@@ -76,6 +79,7 @@ struct AddNoteScreen: View {
                     .padding()
             }
         }
+        .navigationTitle("\(myGardenVegetable.vegetable.name) Note")
         .task(id: selectedPhotoItem) {
             if let selectedPhotoItem {
                 do{
@@ -104,8 +108,7 @@ struct AddNoteScreen: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Save") {
                     saveNote()
-                }
-                
+                }.disabled(!isFormValid)
             }
         }
     }
