@@ -13,7 +13,12 @@ struct PestListScreen: View {
     
     var body: some View {
         List(pests) { pests in
-            PestCellView(pest: pests)
+            NavigationLink {
+                PestDetailScreen(pest: pests)
+            } label: {
+                PestCellView(pest: pests)
+            }
+            
         }
         .listStyle(.plain)
         .navigationTitle("Pests")
